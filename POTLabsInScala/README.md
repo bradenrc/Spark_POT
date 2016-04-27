@@ -8,7 +8,5 @@ Dan1 is Student Lab 1, Dan2 is Student Lab 2, Dan3 is Student Lab 3
 
 In Lab 2 - Step 6, I had to change the UDF.
 
-In Lab 3 - Uses the older version
-           Had trouble getting MSE
-           The predictions seem off
+In Lab 3 - Uses the older version, had trouble getting MSE, the predictions seem off
 
