@@ -1,0 +1,504 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# Lab 3 - Spark MLlib\n",
+    "\n",
+    "#####\"A computer program is said to learn from experience E with respect to some class of tasks T and performance measure P if its performance at tasks in T, as measured by P, improves with experience E\"\n",
+    "-Tom M. Mitchell\n",
+    "\n",
+    "####Machine Learning - the science of getting computers to act without being explicitly programmed\n",
+    "\n",
+    "MLlib is Spark’s machine learning (ML) library. Its goal is to make practical machine learning scalable and easy. It consists of common learning algorithms and utilities, including classification, regression, clustering, collaborative filtering (this example!), dimensionality reduction, as well as lower-level optimization primitives and higher-level pipeline APIs.\n",
+    "\n",
+    "It divides into two packages:\n",
+    "- spark.mllib contains the original API built on top of RDDs.\n",
+    "- spark.ml provides higher-level API built on top of DataFrames for constructing ML pipelines.\n",
+    "\n",
+    "\n",
+    "Using spark.ml is recommended because with DataFrames the API is more versatile and flexible. But we will keep supporting spark.mllib along with the development of spark.ml. Users should be comfortable using spark.mllib features and expect more features coming.\n",
+    "\n",
+    "http://spark.apache.org/docs/latest/mllib-guide.html\n",
+    "\n",
+    "##Online Purchase Recommendations\n",
+    "\n",
+    "Learn how to create a recommendation engine using the Alternating Least Squares algorithm in Spark's machine learning library\n",
+    "\n",
+    "<img src='https://raw.githubusercontent.com/rosswlewis/RecommendationPoT/master/ALS.png' width=\"70%\" height=\"70%\"></img>\n",
+    "\n",
+    "###The data\n",
+    "\n",
+    "This is a transnational data set which contains all the transactions occurring between 01/12/2010 and 09/12/2011 for a UK-based and registered non-store online retail.  The company mainly sells unique all-occasion gifts. Many customers of the company are wholesalers.\n",
+    "\n",
+    "http://archive.ics.uci.edu/ml/datasets/Online+Retail\n",
+    "\n",
+    "<img src='https://raw.githubusercontent.com/rosswlewis/RecommendationPoT/master/FullFile.png' width=\"80%\" height=\"80%\"></img>"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "##Step 1 - Create an RDD from the csv data "
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "###1.1 - Download the data"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "--2016-04-01 18:47:28--  https://raw.githubusercontent.com/rosswlewis/RecommendationPoT/master/OnlineRetail.csv.gz\n",
+      "Resolving raw.githubusercontent.com (raw.githubusercontent.com)... 23.235.46.133\n",
+      "Connecting to raw.githubusercontent.com (raw.githubusercontent.com)|23.235.46.133|:443... connected.\n",
+      "HTTP request sent, awaiting response... 200 OK\n",
+      "Length: 7483128 (7.1M) [application/octet-stream]\n",
+      "Saving to: ‘OnlineRetail.csv.gz’\n",
+      "\n",
+      "100%[======================================>] 7,483,128   31.1MB/s   in 0.2s   \n",
+      "\n",
+      "2016-04-01 18:47:29 (31.1 MB/s) - ‘OnlineRetail.csv.gz’ saved [7483128/7483128]\n",
+      "\n"
+     ]
+    }
+   ],
+   "source": [
+    "!rm 'OnlineRetail.csv.gz' -f\n",
+    "!wget https://raw.githubusercontent.com/rosswlewis/RecommendationPoT/master/OnlineRetail.csv.gz"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "###1.2 - Put the csv into an RDD (at first, each row in the RDD is a string which correlates to a line in the csv)\n",
+    "\n",
+    "Type:<br>\n",
+    "<font face=\"courier\">\n",
+    "loadRetailData = sc.textFile(\"OnlineRetail.csv.gz\")<br>\n",
+    "</font>"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "##Step 2 - Prepare and shape the data:  \"80% of a Data Scientists  job\""
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "####2.1 - Remove the header from the RDD and split the string in each row by comma\n",
+    "Type:<br>\n",
+    "<font face=\"courier\">\n",
+    "header = loadRetailData.first()<br>\n",
+    "splitColumns = loadRetailData.filter(lambda line: line != header).map(lambda l: l.split(\",\"))\n",
+    "</font>"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "#####NOTE:  The original file at UCI's Machine Learning Repository has commas in the product description.  Those have been removed to expediate the lab.\n",
+    "####2.2 - Only keep rows that have a purchase quantity of greater than 0, a customerID not equal to 0, and a non blank stock code after romoving non-numeric characters\n",
+    "Type:<br>\n",
+    "<font face=\"courier\">\n",
+    "import re<br>\n",
+    "filteredRetailData = splitColumns.filter(lambda l: int(l[3]) > 0 and len(re.sub(\"\\D\", \"\", l[1])) != 0 and len(l[6]) != 0)\n",
+    "</font>"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "####2.3 - Map each line to a row and create a data frame \n",
+    "Type:<br>\n",
+    "<font face=\"courier\">\n",
+    "from pyspark.sql import SQLContext, Row<br>\n",
+    "sqlContext = SQLContext(sc)<br>\n",
+    "\n",
+    "retailRows = filteredRetailData.map(lambda l: Row(inv=int(l[0]), stockCode=int(re.sub(\"\\D\", \"\", l[1])), description=l[2], quant=int(l[3]), invDate=l[4], price=float(l[5]), custId=int(l[6]), country=l[7]))<br>\n",
+    "\n",
+    "retailDf = sqlContext.createDataFrame(retailRows)<br>\n",
+    "retailDf.registerTempTable(\"retailPurchases\")\n",
+    "</font>"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "####2.4 - Keep only the data we need (custId, stockCode, and rank)\n",
+    "Type:\n",
+    "<font face=\"courier\">\n",
+    "query = \"\"\"\n",
+    "SELECT \n",
+    "    custId, stockCode, 1 as purch\n",
+    "FROM \n",
+    "    retailPurchases \n",
+    "group \n",
+    "    by custId, stockCode\"\"\"<br>\n",
+    "uniqueCombDf = sqlContext.sql(query)\n",
+    "</font>"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "####2.5 - Randomly split the data into a testing set (10% of the data), a cross validation set (10% of the data) a training set (80% of the data)\n",
+    "Type:<br>\n",
+    "<font face=\"courier\">\n",
+    "testDf, cvDf, trainDf = uniqueCombDf.randomSplit([.1,.1,.8],1)\n",
+    "</font>"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "##Step 3 - Build recommendation models\n",
+    "\n",
+    "####3.1 - Use cross validation DF to train a model with Alternating Least Squares \n",
+    "Latent Factors / rank<br>\n",
+    "The number of columns in the user-feature and product-feature matricies)<br>\n",
+    "Iterations / maxIter<br>\n",
+    "The number of factorization runs<br>\n",
+    "\n",
+    "Type:\n",
+    "<font face=\"courier\">\n",
+    "from pyspark.ml.recommendation import ALS<br><br>\n",
+    "\n",
+    "als1 = ALS(rank=15, maxIter=5, userCol=\"custId\", itemCol=\"stockCode\", ratingCol=\"purch\")<br>\n",
+    "model1 = als1.fit(trainDf)<br><br>\n",
+    "\n",
+    "als2 = ALS(rank=2, maxIter=10, userCol=\"custId\", itemCol=\"stockCode\", ratingCol=\"purch\")<br>\n",
+    "model2 = als2.fit(trainDf)\n",
+    "</font>"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "collapsed": false,
+    "scrolled": true
+   },
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "##Step 4 - Test the models\n",
+    "\n",
+    "Use the models to predict what the user will rate a certain item.  The closer our model to 1 that our model rates an item a user has already purchased, the better.\n",
+    "\n",
+    "####4.1 - Evaluate the model with the cross validation dataframe by using the transorm function.\n",
+    "\n",
+    "Some of the users or purchases in the cross validation data may not have been in the training data.  Let's remove the ones that aren't.\n",
+    "\n",
+    "Type:\n",
+    "<font face=\"courier\">\n",
+    "customers = set(trainDf.rdd.map(lambda line: line.custId).collect())<br>\n",
+    "stock = set(trainDf.rdd.map(lambda line: line.stockCode).collect())<br><br>\n",
+    "\n",
+    "filteredCvDf = cvDf.rdd.filter(lambda line: line.stockCode in stock and line.custId in customers).toDF()<br><br>\n",
+    "\n",
+    "print cvDf.count()<br>\n",
+    "print filteredCvDf.count()\n",
+    "</font>"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "collapsed": false,
+    "scrolled": true
+   },
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Type:\n",
+    "<font face=\"courier\">\n",
+    "predictions1 = model1.transform(filteredCvDf)<br>\n",
+    "predictions2 = model2.transform(filteredCvDf)\n",
+    "</font>"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "collapsed": false,
+    "scrolled": false
+   },
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "####4.2 - Calculate and print the Mean Squared Error.   For all ratings, subtract the prediction from the actual purchase (1), square the result, and take the mean of all of the squared differences.\n",
+    "\n",
+    "Type:\n",
+    "<font face=\"courier\">\n",
+    "meanSquaredError1 = predictions1.map(lambda line: (line.purch - line.prediction)\\*\\*2).mean()<br>\n",
+    "meanSquaredError2 = predictions2.map(lambda line: (line.purch - line.prediction)\\*\\*2).mean()<br><br>\n",
+    "    \n",
+    "print 'Mean squared error = %.4f for our first model' % meanSquaredError1<br>\n",
+    "print 'Mean squared error = %.4f for our second model' % meanSquaredError2\n",
+    "</font>"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "####4.3 - Confirm the model by testing it with the test data and the best hyperparameters found during cross validation\n",
+    "Type:\n",
+    "<font face=\"courier\">\n",
+    "filteredTestDf = testDf.rdd.filter(lambda line: line.stockCode in stock and line.custId in customers).toDF()<br>\n",
+    "predictions3 = model2.transform(filteredTestDf)<br>\n",
+    "meanSquaredError3 = predictions3.map(lambda line: (line.purch - line.prediction)\\*\\*2).mean()<br><br>\n",
+    "    \n",
+    "print 'Mean squared error = %.4f for our best model' % meanSquaredError3\n",
+    "</font>"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "#Step 5 - Implement the model\n",
+    "\n",
+    "Use the best model to predict items the user will be interested in.\n",
+    "\n",
+    "####5.1 - First, create a dataframe in which each row has the user id and an item id.\n",
+    "\n",
+    "Type:\n",
+    "<font face=\"courier\">\n",
+    "userItems = trainDf.filter(trainDf.custId == 15544).select(\"custId\").distinct().join( trainDf.select(\"stockCode\").distinct())\n",
+    "</font>"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "####5.2 - Use 'transform' to rate each item.\n",
+    "\n",
+    "Type:\n",
+    "<font face=\"courier\">\n",
+    "bestRecsDf = model2.transform(userItems)\n",
+    "</font>"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "#### 5.3 - Print the top 5 recommendations.\n",
+    "\n",
+    "Type:\n",
+    "<font face=\"courier\">\n",
+    "print bestRecsDf.sort(\"prediction\",ascending=False).take(5)\n",
+    "</font>"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Let's look up this user and the recommended product ID's in the excel file...\n",
+    "\n",
+    "<img src='https://raw.githubusercontent.com/rosswlewis/RecommendationPoT/master/user.png' width=\"80%\" height=\"80%\"></img>"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "collapsed": true
+   },
+   "source": [
+    "This user seems to have purchased a lot of childrens gifts and some holiday items.  The recomendation engine we created suggested some items along these lines\n",
+    "\n",
+    "#####The ALS algorithm uses some randomness, so the recommendations yours produces may be different than these."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "collapsed": false,
+    "scrolled": true
+   },
+   "outputs": [],
+   "source": [
+    "query = \"\"\"\n",
+    "SELECT \n",
+    "    distinct description \n",
+    "FROM \n",
+    "    retailPurchases \n",
+    "WHERE \n",
+    "    stockCode in ()\"\n",
+    "\"\"\"\n",
+    "items = sqlContext.sql(query)\n",
+    "print items.toPandas()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "#####Data Citation\n",
+    "Daqing Chen, Sai Liang Sain, and Kun Guo, Data mining for the online retail industry: A case study of RFM model-based customer segmentation using data mining, Journal of Database Marketing and Customer Strategy Management, Vol. 19, No. 3, pp. 197â€“208, 2012 (Published online before print: 27 August 2012. doi: 10.1057/dbm.2012.17)."
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 2",
+   "language": "python",
+   "name": "python2"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 2
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython2",
+   "version": "2.7.9"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 0
+}
