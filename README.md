@@ -4,7 +4,7 @@ Assets for IBM's Apache Spark Proof of Technology
 
 
 
-To use these notebooks simply cut and past the URLs below when you are creating a new notebook at Bluemix.net
+To use these notebooks simply cut and paste the URLs below when you are creating a new notebook at Bluemix.net
 
 
 <h3>Introduction to Spark - Python:</h3>
