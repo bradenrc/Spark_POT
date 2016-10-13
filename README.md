@@ -14,8 +14,14 @@ https://raw.githubusercontent.com/bradenrc/Spark_POT/master/Modules/SparkSQL/Int
 <h3>Machine Learning - Python:</h3>
 https://raw.githubusercontent.com/bradenrc/Spark_POT/master/Modules/MachineLearning/Collaborative%20Filtering/Lab%203%20-%20Machine%20Learning%20-%20Student%20Python.ipynb
 
+<br>
+<br>
 
+To setup your your enviroment navigate here, register and create a Spark service:<br>
+https://new-console.ng.bluemix.net
 
+A video tutorial on setting up the enviroment can be viewed here:<br>
+https://www.youtube.com/watch?v=yG3tVVDz1uE
 
 <br><br>
 If you have participated in a POT, we would really appreciate feedback.<br>
